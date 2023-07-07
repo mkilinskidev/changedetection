@@ -59,7 +59,7 @@ services:
      
      # If WEBDRIVER or PLAYWRIGHT are enabled, changedetection container depends on that
      # and must wait before starting (substitute "browser-chrome" with "playwright-chrome" if last one is used)
-    depends_on:
+      depends_on:
         browser-chrome:
             condition: service_started
 
