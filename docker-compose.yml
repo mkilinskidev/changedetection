@@ -1,0 +1,51 @@
+version: '3.2'
+services:
+    changedetection:
+      image: ghcr.io/dgtlmoon/changedetection.io
+      container_name: changedetection
+      hostname: changedetection
+      volumes:
+        - changedetection-data:/datastore
+      environment:
+        - WEBDRIVER_URL=http://browser-chrome:4444/wd/hub
+        - PLAYWRIGHT_DRIVER_URL=ws://playwright-chrome:3000/?stealth=1&--disable-web-security=true
+      ports:
+        - 5000:5000
+      restart: unless-stopped
+      depends_on:
+        browser-chrome:
+            condition: service_started
+        playwright-chrome:
+            condition: service_started
+
+    browser-chrome:
+        hostname: browser-chrome
+        image: selenium/standalone-chrome-debug:3.141.59
+        environment:
+            - VNC_NO_PASSWORD=1
+            - SCREEN_WIDTH=1920
+            - SCREEN_HEIGHT=1080
+            - SCREEN_DEPTH=24
+        volumes:
+            - /dev/shm:/dev/shm
+        restart: unless-stopped
+
+    playwright-chrome:
+        hostname: playwright-chrome
+        image: browserless/chrome
+        restart: unless-stopped
+        environment:
+            - SCREEN_WIDTH=1920
+            - SCREEN_HEIGHT=1024
+            - SCREEN_DEPTH=16
+            - ENABLE_DEBUGGER=false
+            - PREBOOT_CHROME=true
+            - CONNECTION_TIMEOUT=300000
+            - MAX_CONCURRENT_SESSIONS=10
+            - CHROME_REFRESH_TIME=600000
+            - DEFAULT_BLOCK_ADS=true
+            - DEFAULT_STEALTH=true
+            - DEFAULT_IGNORE_HTTPS_ERRORS=true
+
+volumes:
+  changedetection-data:
